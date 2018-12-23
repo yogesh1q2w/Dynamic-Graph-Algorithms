@@ -1,0 +1,112 @@
+-------Dynamic Graph Algorithms: Implementation and Analysis-------
+
+This project contains the implementation of following algorithms:
+
+1. Connectivity in Fully Dynamic Undirected Graphs:
+    Both operations are supported in O((log n)^2) amortized time. 
+    For both incremental and decremental case, a single data structure
+    - Euler Tour Tree is maintained on a spanning forest of the graph.
+    Euler Tour Tree is also maintained as a Binary Search Tree to support
+    operations like add_edge, delete_edge, find_root, etc in O(log n).
+    Each edge is given a level no. which begins with 0, when the edge is 
+    added and increases only in case of deletion of edge. For each level,
+    a forest is maintained. Every edge in level (i+1) is present in level (i).
+    This reduces the search space for replacement edges in decremental case.
+
+2. Minimum Spanning Tree in Decremental-only Undirected Graphs:
+	This is just an extension of previous implementation of Connectivity. In 
+	this case, instead of looking for replacement edges in case of deletions
+	in no particular order, we look for them in increasing order of weights. For 
+	this, we maintain a stl::multi_set which will keep the edges in increasing
+	order of weights and answer queries in O(log n). Overall, the deletions-only
+	MST will take O((log n)^4) update time. Incremental case cannot be supported 
+	easily with Euler Tour Tree structure because an edge addition can potentially
+	change major portion of MST and scanning through Euler Tour Tree for edges would
+	be as good as reconstructing the whole MST.
+
+3. Single Source Shortest Path in Dynamically Changing Weight Directed Graph:
+	The edge-weight increment and decrement case is handled separetely. If the edge
+	weight is increased, we know the node set which have to be updated. We have a set
+	of nodes and increment to it's shortest distance. This value is smallest from it's
+	parent node or from incoming edges. If edge (i,j) is modified, j and all it's descendants
+	are examined. However, on decrement of edge weight, we don't know the nodes which need
+	to be updated. All nodes which are descendants of j are examined as edges with them as
+	source are potential edges. Node i is made new parent of j. All edges with source nodes
+	in descendants of j are potential significant edges that could lessen the shortest 
+	distances of nodes outside the subtree. These are used in the updation of SPT.
+
+--Description of files in the folder--
+
+BinarySearchTree.cpp / BinarySearchTree.h:
+    Implementation of Binary Search Tree and it's corresponding header file.
+
+EulerTourTree.cpp / EulerTourTree.h:
+    Implementation of Euler Tour Tree using Binary Search Tree and it's corresponding
+    header file.
+
+connectivity.h / connectivity.cpp:
+    Implementation of Fully-Dynamic Connectivity in Undirected Graph and it's corresponding
+    header file.
+
+MST.cpp / MST.cpp:
+    Implementation of Decremental-only Minimum Spanning Tree in Undirected Weighted Graph 
+    and it's corresponding header file.
+
+SPT.cpp / SPT.h:
+    Implementation of Single Source Shortest Path in Dynamically Changing Weight Directed
+    Graph and it's corresponding header file.
+
+main.cpp:
+    Interactive program to run any one of three modules on a file and get the time taken to
+    run random queries and updates.
+
+test.cpp:
+    Run the programs on benchmark files to test the files.
+
+Makefile:
+    a.out: Create a.out, compiles main.cpp. ./a.out will provide the interface to run modules on
+    any appropriate file.
+
+    clean: removes a.out
+
+    test: Compiles test.cpp, runs it on benchmark program, prints PASS if output matches with 
+    correct output, FAIL otherwise.
+
+get_facebook_weighted:
+    Converts facebook_combined.txt dataset without weights, into weighted edges(random weights).
+
+How to use these files?
+
+Run "make test" and check if it prints PASS.
+Now, run the program on any file.
+Format of file for connectivity:
+V E
+<V1> <V2>
+.
+.
+.
+where V is number of vertices and E is number of edges. Then list of all edges is given.
+
+Format of file for MST and SPT:
+V E
+<V1> <V2> <Wt>
+.
+.
+.
+where V is number of vertices and E is number of edges. Then list of all edges is given with weight.
+
+The time taken to run is appended to timefile.txt as:
+<update-time> <query-time>
+
+
+Major sources and references:
+
+1) Poly-logarithmic deterministic fully-dynamic algorithms for connectivity, minimum spanning tree,
+   2-edge, and biconnectivity. Journal of the ACM.-  Holm, J.; De Lichtenberg, K.; Thorup, M. (2001).
+
+2) An Efficient Algorithm for Dynamic Shortest Path Tree Update in Network Routing: Bin Xiao, 
+   Jiannong Cao, Zili Shao, and Edwin H.-M. Sha
+
+3) CS 267 Lecture notes Dynamic Connectivity Virginia V. Williams
+
+4) Video lectures by Sayan Bhattacharya(IMSc) on Dynamic Graph Algorithms
